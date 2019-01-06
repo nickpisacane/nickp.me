@@ -1,0 +1,32 @@
+{
+  "name": "nickp.me",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build:ts": "webpack --config ./webpack.config.prod.js",
+    "build:css": "postcss --use autoprefixer --use postcss-css-variables --no-map -o public/css/main.css styles/*.css",
+    "build": "yarn build:ts && yarn build:css",
+    "deploy": "websync",
+    "watch:css": "npm-watch",
+    "dev-server": "webpack-dev-server --config ./webpack.config.dev.js",
+    "start": "concurrently \"yarn dev-server\" \"yarn watch:css\""
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.4.4",
+    "concurrently": "^4.1.0",
+    "npm-watch": "^0.5.0",
+    "postcss-cli": "^6.1.1",
+    "postcss-css-variables": "^0.11.0",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.2.2",
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.2.0",
+    "webpack-dev-server": "^3.1.14",
+    "websync": "^0.0.13"
+  },
+  "dependencies": {},
+  "watch": {
+    "build:css": "styles/*.css"
+  }
+}
