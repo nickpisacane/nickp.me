@@ -8,7 +8,7 @@
     "build:css": "postcss --use autoprefixer --use postcss-css-variables --no-map -o public/css/main.css styles/*.css",
     "build": "yarn build:ts && yarn build:css",
     "deploy": "websync",
-    "watch:css": "npm-watch",
+    "watch:css": "npm-watch build:css",
     "dev-server": "webpack-dev-server --config ./webpack.config.dev.js",
     "start": "concurrently \"yarn dev-server\" \"yarn watch:css\""
   },
@@ -27,6 +27,12 @@
   },
   "dependencies": {},
   "watch": {
-    "build:css": "styles/*.css"
+    "build:css": {
+      "patterns": [
+        "styles/*.css"
+      ],
+      "extensions": "css",
+      "quiet": false
+    }
   }
 }
