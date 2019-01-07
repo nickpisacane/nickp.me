@@ -1,0 +1,76 @@
+/* Global Vars */
+
+/* Boiler-plate */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  background: rgba(2, 2, 2, 0.98);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2.25rem;
+}
+h3 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 1.75rem;
+}
+h5 {
+  font-size: 1.5rem;
+}
+h6 {
+  font-size: 1.25rem;
+}
+p {
+  font-size: 1rem;
+}
+
+/* Styles */
+
+#art {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(rgba(2, 2, 2, 0.98), rgba(0, 0, 0, 0));
+}
+
+.info {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info__img {
+  border-radius: 50%;
+  max-width: 100%;
+  width: 256px;
+  height: auto;
+}
+
+.info__name {
+  color: #5aff9c;
+}
