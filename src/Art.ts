@@ -21,6 +21,7 @@ export interface ArtLayer {
 }
 
 interface ArtLayerContext {
+  absoluteTime: number;
   currentTime: number;
   time: number;
   layer: ArtLayer;
@@ -29,6 +30,7 @@ interface ArtLayerContext {
 
 const createLayerContext = (layer: ArtLayer): ArtLayerContext => ({
   active: typeof layer.threshold === 'number' ? layer.threshold === 0 : true,
+  absoluteTime: 0,
   currentTime: 0,
   time: 0,
   layer,
@@ -127,12 +129,35 @@ export default class Art {
     window.removeEventListener('click', this.handleClick, false);
   }
 
-  public addTime(delta: number) {
+  public addTime(time: number) {
     this.reactionLayers.forEach(ctx => {
-      ctx.time += delta * (ctx.layer.delta ? ctx.layer.delta : 1);
-      this.handleLayerActivation(ctx);
+      this.addTimeToLayer(ctx, time);
     });
     this.safeDraw();
+  }
+
+  private addTimeToLayer(ctx: ArtLayerContext, time: number) {
+    const deltaTime = time * (ctx.layer.delta || 1);
+    ctx.absoluteTime += deltaTime;
+    if (
+      typeof ctx.layer.threshold === 'number' &&
+      ctx.absoluteTime > ctx.layer.threshold
+    ) {
+      ctx.active = true;
+    }
+
+    if (ctx.active) {
+      ctx.time += deltaTime;
+    }
+  }
+
+  private maybeDropoffLayer(ctx: ArtLayerContext) {
+    if (
+      typeof ctx.layer.dropoff === 'number' &&
+      ctx.currentTime > ctx.layer.dropoff
+    ) {
+      ctx.active = false;
+    }
   }
 
   private handleLayerActivation(ctx: ArtLayerContext) {
@@ -148,17 +173,15 @@ export default class Art {
   }
 
   private renderIntervalLayer(ctx: ArtLayerContext) {
-    ctx.time += ctx.layer.delta ? ctx.layer.delta : 1;
-    this.handleLayerActivation(ctx);
+    this.addTimeToLayer(ctx, 1);
 
-    if (ctx.active) {
-      for (; ctx.currentTime < ctx.time; ctx.currentTime++) {
-        const entity = this.getNextEntity(ctx.layer, ctx.currentTime);
-        if (entity) {
-          this.entities.push(entity);
-          this.safeUpdate();
-        }
+    for (; ctx.currentTime < ctx.time && ctx.active; ctx.currentTime++) {
+      const entity = this.getNextEntity(ctx.layer, ctx.currentTime);
+      if (entity) {
+        this.entities.push(entity);
+        this.safeUpdate();
       }
+      this.maybeDropoffLayer(ctx);
     }
   }
 
@@ -198,25 +221,14 @@ export default class Art {
 
       for (
         let t = 0;
-        ctx.currentTime < ctx.time && t < this.maxEntityPerDraw;
+        ctx.currentTime < ctx.time && t < this.maxEntityPerDraw && ctx.active;
         ctx.currentTime++, t++
       ) {
         const entity = this.getNextEntity(ctx.layer, ctx.currentTime);
         if (entity) {
           this.entities.push(entity);
         }
-      }
-
-      if (
-        typeof ctx.layer.dropoff === 'number' &&
-        ctx.currentTime > ctx.layer.dropoff
-      ) {
-        console.log('DROPING OFF');
-        ctx.active = false;
-      }
-
-      if (ctx.active && ctx.currentTime < ctx.time) {
-        shouldContinue = true;
+        this.maybeDropoffLayer(ctx);
       }
     }
 
