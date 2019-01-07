@@ -22,7 +22,12 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'public'),
+    contentBase: [
+      path.join(__dirname, 'public'),
+      // to trigger reloads when css changes
+      path.join(__dirname, 'public', 'css'),
+    ],
     port: 8000,
+    watchContentBase: true,
   },
 };
