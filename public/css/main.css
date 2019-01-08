@@ -52,6 +52,7 @@ p {
 .container {
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
   height: 100vh;
   background: radial-gradient(rgba(2, 2, 2, 0.98), rgba(0, 0, 0, 0));
@@ -73,6 +74,49 @@ p {
 
 .info__name {
   color: #5aff9c;
+}
+
+.info__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  padding: 16px;
+}
+
+.info__link {
+  display: block;
+  font-size: 1.25rem;
+  color: #ffed24;
+  text-decoration: none;
+}
+
+.info__link:not(:last-of-type) {
+  margin-right: 24px;
+}
+
+.info__link-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info__link svg {
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+}
+
+@media screen and (max-width: 750px) {
+  .info__links {
+    flex-direction: column;
+  }
+
+  .info__link:not(:last-of-type) {
+    margin-right: 0px;
+    margin-bottom: 24px;
+  }
 }
 
 /* Glitchy Text */
