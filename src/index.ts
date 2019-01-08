@@ -161,7 +161,8 @@ const spirals: ArtLayer[] = [
 
 const init = () => {
   const artContainer = document.querySelector('#art');
-  const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals]);
+  const me = document.querySelector('#me');
+  const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals], me);
 
   art.initialize();
   (window as any).feather.replace();

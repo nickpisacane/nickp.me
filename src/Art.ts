@@ -40,6 +40,7 @@ export default class Art {
   private canvas: HTMLCanvasElement;
   private targetEl: Element;
   private context: CanvasRenderingContext2D;
+  private anchorEl: Element | null = null;
 
   private segmentTime: number = 10;
   private center: Vec2;
@@ -80,7 +81,11 @@ export default class Art {
 
   private update = () => this.updateImpl();
 
-  constructor(targetEl: Element, layers: ArtLayer[] = []) {
+  constructor(
+    targetEl: Element,
+    layers: ArtLayer[] = [],
+    anchorEl: Element | null = null,
+  ) {
     this.targetEl = targetEl;
 
     this.reactionLayers = layers
@@ -89,13 +94,20 @@ export default class Art {
     this.intervalLayers = layers
       .filter(layer => typeof layer.interval === 'number')
       .map(createLayerContext);
+
+    this.anchorEl = anchorEl;
   }
 
   private calculateSize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.bounds = new Vec2(width, height);
-    this.center = this.bounds.mul(0.5);
+    if (!this.anchorEl) {
+      this.center = this.bounds.mul(0.5);
+    } else {
+      const {width, height, top, left} = this.anchorEl.getBoundingClientRect();
+      this.center = new Vec2(left + width / 2, top + height / 2);
+    }
     this.canvas.width = width;
     this.canvas.height = height;
   }
