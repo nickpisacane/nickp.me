@@ -44,7 +44,7 @@ const dreamCatcher: ArtLayer = {
   delta: 5,
   dropoff: 5000,
   next: (t: number): ArtOperation => {
-    const position = new Vec2(Math.cos(t), Math.sin(t)).mul(128 + 1.5 * t);
+    const position = new Vec2(Math.cos(t), Math.sin(t)).mul(1.5 * t);
     const alphaIntensity = 1 / (new Vec2(0, 0).sub(position).mag() / 200);
     return {
       type: 'path',
@@ -164,6 +164,7 @@ const init = () => {
   const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals]);
 
   art.initialize();
+  (window as any).feather.replace();
   GlitchyText.initializeAll();
 };
 
