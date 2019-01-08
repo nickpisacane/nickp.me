@@ -6,13 +6,16 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+}
+
 body {
   margin: 0;
   padding: 0;
   height: 100vh;
   width: 100vw;
   font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
   background: rgba(2, 2, 2, 0.98);
 }
 
@@ -111,11 +114,30 @@ p {
 @media screen and (max-width: 750px) {
   .info__links {
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .info__link:not(:last-of-type) {
     margin-right: 0px;
     margin-bottom: 24px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .info__img {
+    width: 196px;
+  }
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .info__img {
+    width: 160px;
+  }
+  html {
+    font-size: 12px;
   }
 }
 
