@@ -80,3 +80,95 @@ p {
 .info__name {
   color: var(--primaryColor);
 }
+
+/* Glitchy Text */
+.glitchy-text {
+  position: relative;
+  z-index: 10;
+}
+
+.glitchy-text__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.glitchy-text:hover .glitchy-text__layer:nth-child(1) {
+  animation: glitchy-text-1 500ms linear;
+}
+.glitchy-text:hover .glitchy-text__layer:nth-child(2) {
+  animation: glitchy-text-2 500ms linear;
+}
+.glitchy-text:hover .glitchy-text__layer:nth-child(3) {
+  animation: glitchy-text-3 500ms linear;
+}
+
+@keyframes glitchy-text-1 {
+  0% {
+    transform: matrix(1, 0.01, 0.01, 1, -2, -3);
+    opacity: 1;
+  }
+  25% {
+    transform: matrix(1, 0.01, 0.01, 1, 4, 5);
+    opacity: 0.5;
+  }
+  50% {
+    transform: matrix(1, 0.01, -0.01, 1, 1, -2);
+    opacity: 0.25;
+  }
+  75% {
+    transform: matrix(1, -0.01, 0.01, 1, -2, 6);
+    opacity: 0.1;
+  }
+  100% {
+    transform: matrix(1, 0, 0, 0, 1, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes glitchy-text-2 {
+  0% {
+    transform: matrix(1, 0.1, 0.01, 1, 0, 0);
+    opacity: 0.25;
+  }
+  25% {
+    transform: matrix(1, 0.01, 0.1, 1, 0, 0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: matrix(1, 0.1, -0.1, 1, 0, 0);
+    opacity: 0.25;
+  }
+  75% {
+    transform: matrix(1, -0.01, 0.04, 1, 0, 0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: matrix(1, 0, 0, 0, 1, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes glitchy-text-3 {
+  0% {
+    transform: matrix(1, 0, 0, 1, -1, -1);
+    opacity: 1;
+  }
+  25% {
+    transform: matrix(1, 0, 0, 1, 1, 3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: matrix(1, 0, 0, 1, 3, -2);
+    opacity: 0.2;
+  }
+  75% {
+    transform: matrix(1, 0, 0, 1, -2, 3);
+    opacity: 0.1;
+  }
+  100% {
+    transform: matrix(1, 0, 0, 0, 1, 0);
+    opacity: 1;
+  }
+}

@@ -2,6 +2,7 @@ import helloInspector from './helloInspector';
 import Art, {ArtLayer, ArtOperation, ArtOperationType} from './Art';
 import Vec2 from './Vec2';
 import * as math from './math';
+import GlitchyText from './GlitchyText';
 
 helloInspector();
 
@@ -48,7 +49,7 @@ const dreamCatcher: ArtLayer = {
     return {
       type: 'path',
       position,
-      color: `rgba(0, 120, 200, ${math.clamp(1 * alphaIntensity, 0, 1)})`,
+      color: `rgba(0, 120, 200, ${math.clamp(0.8 * alphaIntensity, 0, 1)})`,
     };
   },
 };
@@ -163,8 +164,7 @@ const init = () => {
   const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals]);
 
   art.initialize();
-  // art.addTime(100);
-  (window as any).art = art;
+  GlitchyText.initializeAll();
 };
 
 window.addEventListener('load', init);
