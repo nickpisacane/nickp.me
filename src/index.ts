@@ -165,7 +165,6 @@ const init = () => {
   const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals], me);
 
   art.initialize();
-  (window as any).feather.replace();
   GlitchyText.initializeAll();
 };
 
