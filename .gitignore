@@ -81,3 +81,6 @@ typings/
 
 # macOS
 .DS_Store
+
+# JS
+/public/js/main.js
