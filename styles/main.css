@@ -1,9 +1,13 @@
 /* Global Vars */
 
 :root {
-  --primaryColor: #5aff9c;
-  --secondaryColor: #ffed24;
-  --backgroundColor: rgba(2, 2, 2, 0.98);
+  --primaryColor: #1be7ff;
+  --secondaryColor: #e9ff70;
+  --tertiaryColor: #affc41;
+  --accentColor: rgb(255, 32, 110);
+  /* --primaryColor: #072ac8;
+  --secondaryColor: #f20089; */
+  --backgroundColor: linear-gradient(#10002b, #3c096c);
 }
 
 /* Boiler-plate */
@@ -72,6 +76,8 @@ p {
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
+  padding: 32px;
 }
 
 .info__img {
@@ -83,6 +89,13 @@ p {
 
 .info__name {
   color: var(--primaryColor);
+  text-align: center;
+  text-shadow: 1px 1px 2px var(--accentColor);
+}
+
+.info__description {
+  color: var(--secondaryColor);
+  text-align: center;
 }
 
 .info__links {
@@ -97,7 +110,7 @@ p {
 .info__link {
   display: block;
   font-size: 1.25rem;
-  color: var(--secondaryColor);
+  color: var(--accentColor);
   text-decoration: none;
 }
 

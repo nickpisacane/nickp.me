@@ -1,8 +1,14 @@
 import Vec2 from './Vec2';
-import {ArtEntity, CircleEntity, SquareEntity, PathEntity} from './ArtEntity';
-import {debounce, throttle} from './utils';
+import {
+  ArtEntity,
+  CircleEntity,
+  SquareEntity,
+  PathEntity,
+  TriangleEntity,
+} from './ArtEntity';
+import {debounce} from './utils';
 
-export type ArtOperationType = 'path' | 'circle' | 'square';
+export type ArtOperationType = 'path' | 'circle' | 'square' | 'triangle';
 
 export interface ArtOperation {
   type: ArtOperationType;
@@ -61,7 +67,6 @@ export default class Art {
   private intervalHandlers: number[];
 
   private handleResize = debounce(() => {
-    console.log('resize: ');
     this.context.clearRect(0, 0, this.bounds.x, this.bounds.y);
     this.calculateSize();
 
@@ -89,10 +94,10 @@ export default class Art {
     this.targetEl = targetEl;
 
     this.reactionLayers = layers
-      .filter(layer => typeof layer.interval !== 'number')
+      .filter((layer) => typeof layer.interval !== 'number')
       .map(createLayerContext);
     this.intervalLayers = layers
-      .filter(layer => typeof layer.interval === 'number')
+      .filter((layer) => typeof layer.interval === 'number')
       .map(createLayerContext);
 
     this.anchorEl = anchorEl;
@@ -119,12 +124,9 @@ export default class Art {
     this.calculateSize();
     this.intervalHandlers = this.intervalLayers.map(
       (ctx: ArtLayerContext, index: number) =>
-        setInterval(
-          () => {
-            this.renderIntervalLayer(ctx);
-          },
-          ctx.layer.interval as number,
-        ),
+        setInterval(() => {
+          this.renderIntervalLayer(ctx);
+        }, ctx.layer.interval as number),
     );
     window.addEventListener('resize', this.handleResize, false);
     window.addEventListener('mousemove', this.handleMouseMove, false);
@@ -134,7 +136,7 @@ export default class Art {
   public destroy() {
     clearTimeout(this.drawTimer);
     clearTimeout(this.updateTimer);
-    this.intervalHandlers.forEach(timer => clearInterval(timer));
+    this.intervalHandlers.forEach((timer) => clearInterval(timer));
     this.targetEl.removeChild(this.canvas);
     window.removeEventListener('resize', this.handleResize, false);
     window.removeEventListener('mousemove', this.handleMouseMove, false);
@@ -142,7 +144,7 @@ export default class Art {
   }
 
   public addTime(time: number) {
-    this.reactionLayers.forEach(ctx => {
+    this.reactionLayers.forEach((ctx) => {
       this.addTimeToLayer(ctx, time);
     });
     this.safeDraw();
@@ -153,7 +155,9 @@ export default class Art {
     ctx.absoluteTime += deltaTime;
     if (
       typeof ctx.layer.threshold === 'number' &&
-      ctx.absoluteTime > ctx.layer.threshold
+      ctx.absoluteTime > ctx.layer.threshold &&
+      (typeof ctx.layer.dropoff !== 'number' ||
+        ctx.currentTime < ctx.layer.threshold)
     ) {
       ctx.active = true;
     }
@@ -208,6 +212,8 @@ export default class Art {
         return new CircleEntity(color, layer.size, nextOp.position);
       case 'square':
         return new SquareEntity(color, layer.size, nextOp.position);
+      case 'triangle':
+        return new TriangleEntity(color, layer.size, nextOp.position);
       case 'path':
         const prevOp = layer.next(time - 1);
         if (!prevOp) return null;

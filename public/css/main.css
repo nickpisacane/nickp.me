@@ -1,5 +1,10 @@
 /* Global Vars */
 
+:root {
+  /* --primaryColor: #072ac8;
+  --secondaryColor: #f20089; */
+}
+
 /* Boiler-plate */
 
 * {
@@ -16,7 +21,7 @@ body {
   height: 100vh;
   width: 100vw;
   font-family: 'Open Sans', sans-serif;
-  background: rgba(2, 2, 2, 0.98);
+  background: linear-gradient(#10002b, #3c096c);
 }
 
 h1 {
@@ -58,7 +63,7 @@ p {
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  background: radial-gradient(rgba(2, 2, 2, 0.98), rgba(0, 0, 0, 0));
+  background: radial-gradient(linear-gradient(#10002b, #3c096c), rgba(0, 0, 0, 0));
 }
 
 .info {
@@ -66,6 +71,8 @@ p {
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
+  padding: 32px;
 }
 
 .info__img {
@@ -76,7 +83,14 @@ p {
 }
 
 .info__name {
-  color: #5aff9c;
+  color: #1be7ff;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgb(255, 32, 110);
+}
+
+.info__description {
+  color: #e9ff70;
+  text-align: center;
 }
 
 .info__links {
@@ -91,7 +105,7 @@ p {
 .info__link {
   display: block;
   font-size: 1.25rem;
-  color: #ffed24;
+  color: rgb(255, 32, 110);
   text-decoration: none;
 }
 

@@ -65,6 +65,38 @@ export class SquareEntity extends ArtEntity {
   }
 }
 
+export class TriangleEntity extends ArtEntity {
+  public size: number;
+  public position: Vec2;
+
+  constructor(color: string, size: number, position: Vec2) {
+    super(color);
+    this.size = size;
+    this.position = position;
+  }
+
+  public render(
+    ctx: CanvasRenderingContext2D,
+    center: Vec2,
+    bounds: Vec2,
+  ): void {
+    const {x, y} = math
+      .normalizePosition(this.position, center)
+      .addScalar(this.size / 2);
+
+    ctx.fillStyle = this.color;
+    ctx.moveTo(x, y);
+    // move to bottom left angle
+    ctx.lineTo(x - this.size, y);
+    // move to top angle
+    ctx.lineTo(x - this.size / 2, y - this.size);
+    // Close the loop
+    ctx.lineTo(x, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+
 export class PathEntity extends ArtEntity {
   public width: number;
   public begin: Vec2;

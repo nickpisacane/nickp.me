@@ -10,8 +10,9 @@
     "build": "yarn build:ts && yarn build:css && yarn build:html",
     "deploy": "websync",
     "watch:css": "npm-watch build:css",
+    "watch:html": "npm-watch build:html",
     "dev-server": "webpack-dev-server --config ./webpack.config.dev.js",
-    "start": "concurrently \"yarn dev-server\" \"yarn watch:css\""
+    "start": "concurrently \"yarn dev-server\" \"yarn watch:css\" \"yarn watch:html\""
   },
   "devDependencies": {
     "autoprefixer": "^9.4.4",
@@ -34,6 +35,13 @@
         "styles/*.css"
       ],
       "extensions": "css",
+      "quiet": false
+    },
+    "build:html": {
+      "patterns": [
+        "html/*.html"
+      ],
+      "extensions": "html",
       "quiet": false
     }
   }

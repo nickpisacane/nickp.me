@@ -6,163 +6,125 @@ import GlitchyText from './GlitchyText';
 
 helloInspector();
 
-const butterFly: ArtLayer = {
-  color: 'rgba(125, 0, 255, 0.5)',
-  size: 3,
-  delta: 20,
-  interval: 10,
-  threshold: 10000,
-  dropoff: 90000,
-  next: (t: number): ArtOperation => {
-    const m =
-      Math.pow(Math.E, Math.cos(t)) -
-      2 * Math.cos(4 * t) -
-      Math.pow(Math.sin(t / 12), 5);
-    const position = new Vec2(
-      Math.cos(Math.PI / 2 + t) * m,
-      Math.sin(Math.PI / 2 + t) * m,
-    ).mul(200);
-    const alphaIntensity = new Vec2(0, 0).sub(position).mag() / 4000;
-    const redIntensity = new Vec2(200, 200).sub(position).mag() / 400;
-    const blueIntensity = new Vec2(-200, -200).sub(position).mag() / 400;
-    return {
-      type: t % 2 ? 'circle' : 'square',
-      color: `rgba(${math.clamp(255 * redIntensity, 0, 255)}, 0, ${math.clamp(
-        255 * blueIntensity,
-        0,
-        255,
-      )}, ${math.clamp(alphaIntensity, 0, 0.5)})`,
-      position,
-    };
-  },
-};
+type ColorFn = (alpha: number) => string;
+type Color = string | ColorFn;
 
-const dreamCatcher: ArtLayer = {
-  color: `rgba(0, 120, 200, 0.1)`,
-  size: 2,
-  interval: 100,
-  delta: 5,
-  dropoff: 5000,
-  next: (t: number): ArtOperation => {
-    const position = new Vec2(Math.cos(t), Math.sin(t)).mul(1.5 * t);
-    const alphaIntensity = 1 / (new Vec2(0, 0).sub(position).mag() / 200);
-    return {
-      type: 'path',
-      position,
-      color: `rgba(0, 120, 200, ${math.clamp(0.8 * alphaIntensity, 0, 1)})`,
-    };
-  },
-};
-
-const SPIRAL_BASE = 0;
-
-interface SimpleSpiralOptions {
-  color: string;
-  factor: number;
-  type: ArtOperationType;
-  size?: number;
-  delta?: number;
-  dropoff?: number;
-  threshold?: number;
-  angleOffset?: number;
-  inverted?: boolean;
-}
-
-const createSpiral = ({
-  color,
-  factor,
-  type,
-  size = 4,
-  delta = 1,
-  dropoff = 50,
-  threshold = 0,
-  angleOffset = 0,
-  inverted = false,
-}: SimpleSpiralOptions): ArtLayer => {
-  const x = inverted ? Math.sin : Math.cos;
-  const y = inverted ? Math.cos : Math.sin;
-
+const createArtLayer = (
+  color: Color,
+  type: ArtOperationType,
+  layer: Partial<ArtLayer> = {},
+  {
+    p = 12,
+    m = 200,
+    e = 5,
+    a = 4000,
+    n = 4,
+  }: Partial<{p: number; m: number; e: number; a: number; n: number}> = {},
+): ArtLayer => {
   return {
-    color,
-    size,
-    delta,
-    threshold,
-    dropoff,
-    next: (t: number): ArtOperation => ({
-      type,
-      position: new Vec2(
-        x(t / factor + angleOffset),
-        y(t / factor + angleOffset),
-      ).mul(SPIRAL_BASE + t * factor * 10),
-    }),
+    color: typeof color === 'string' ? color : color(1),
+    size: 1,
+    delta: 0,
+    interval: 50,
+    dropoff: 90,
+    next: (t: number): ArtOperation => {
+      const multiplier =
+        Math.pow(Math.E, Math.cos(t)) -
+        2 * Math.cos(n * t) -
+        Math.pow(Math.sin(t / p), e);
+      const position = new Vec2(
+        Math.cos(Math.PI / 2 + t) * multiplier,
+        Math.sin(Math.PI / 2 + t) * multiplier,
+      ).mul(m);
+      const alphaIntensity = new Vec2(0, 0).sub(position).mag() / a;
+      return {
+        type,
+        color: typeof color === 'string' ? color : color(alphaIntensity),
+        position,
+      };
+    },
+    ...layer,
   };
 };
 
-const spirals: ArtLayer[] = [
-  createSpiral({
-    color: 'rgba(255, 120, 150, 0.5)',
-    type: 'circle',
-    factor: 16,
-    angleOffset: Math.PI / 2,
-  }),
-  createSpiral({
-    color: 'rgba(0, 0, 255, 0.5)',
-    type: 'path',
-    factor: 16,
-    threshold: 50,
-    angleOffset: Math.PI / 2,
-  }),
-  createSpiral({
-    color: 'rgba(255, 120, 150, 0.5)',
-    type: 'circle',
-    factor: 16,
-    inverted: true,
-    angleOffset: 0,
-  }),
-  createSpiral({
-    color: 'rgba(0, 0, 255, 0.5)',
-    type: 'path',
-    factor: 16,
-    threshold: 50,
-    inverted: true,
-    angleOffset: 0,
-  }),
-  createSpiral({
-    color: 'red',
-    type: 'circle',
-    factor: 8,
-    threshold: 100,
-    angleOffset: Math.PI,
-  }),
-  createSpiral({
-    color: 'blue',
-    type: 'path',
-    factor: 8,
-    threshold: 150,
-    angleOffset: Math.PI,
-  }),
-  createSpiral({
-    color: 'red',
-    type: 'circle',
-    factor: 8,
-    inverted: true,
-    threshold: 100,
-    angleOffset: Math.PI / 2,
-  }),
-  createSpiral({
-    color: 'blue',
-    type: 'path',
-    factor: 8,
-    threshold: 150,
-    inverted: true,
-    angleOffset: Math.PI / 2,
-  }),
-];
+const createGraph = (
+  color: Color,
+  type: ArtOperationType,
+  size: number,
+): ArtLayer =>
+  createArtLayer(
+    color,
+    type,
+    {
+      size,
+      delta: 1,
+      interval: 20,
+      dropoff: 100,
+    },
+    {
+      p: 100,
+      m: 100,
+      n: 200,
+      e: 1,
+    },
+  );
+
+const graphEdges = createGraph((a) => `rgba(255, 32, 110, ${a})`, 'path', 2);
+
+const graphqNodes = createGraph('#072ac8', 'circle', 2);
+
+const createGraph2 = (
+  color: Color,
+  type: ArtOperationType,
+  size: number,
+): ArtLayer =>
+  createArtLayer(
+    color,
+    type,
+    {
+      size,
+      delta: 20,
+      interval: 1,
+      dropoff: 100,
+      threshold: 800,
+    },
+    {
+      p: 32,
+      m: 400,
+      n: 2,
+      e: 1,
+    },
+  );
+
+const graph2Nodes = createGraph2('rgb(233, 255, 112)', 'circle', 0.5);
+
+const contourNodes = createArtLayer(
+  'rgba(255, 32, 110, 0.5)',
+  'circle',
+  {
+    size: 0.5,
+    delta: 100,
+    interval: 0.1,
+    threshold: 40000,
+    dropoff: 20000,
+  },
+  {
+    p: 32,
+    m: 600,
+    n: 1,
+  },
+);
 
 const init = () => {
   const artContainer = document.querySelector('#art');
   const me = document.querySelector('#me');
-  const art = new Art(artContainer, [butterFly, dreamCatcher, ...spirals], me);
+  let layers: ArtLayer[];
+  if (window.matchMedia('(min-width: 600px)').matches) {
+    layers = [graphEdges, graphqNodes, graph2Nodes, contourNodes];
+  } else {
+    layers = [graph2Nodes, {...contourNodes, threshold: 0}];
+  }
+  const art = new Art(artContainer, layers, me);
 
   art.initialize();
   GlitchyText.initializeAll();
