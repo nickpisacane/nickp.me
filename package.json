@@ -6,9 +6,9 @@
   "scripts": {
     "build:ts": "webpack --config ./webpack.config.prod.js",
     "build:css": "postcss --use autoprefixer --use postcss-css-variables --no-map -o public/css/main.css styles/*.css",
-    "build:html": "for file in \"$(ls ./html)\"; do feather-replace \"./html/$file\" > \"./public/$file\"; done",
+    "build:html": "for file in \"$(ls ./html)\"; do feather-replace \"./html/$file\" | ./scripts/gen-metadata.js \"$file\" > \"./public/$file\"; done",
     "build": "yarn build:ts && yarn build:css && yarn build:html",
-    "deploy": "websync",
+    "deploy": "yarn build && websync",
     "watch:css": "npm-watch build:css",
     "watch:html": "npm-watch build:html",
     "dev-server": "webpack-dev-server --config ./webpack.config.dev.js",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "autoprefixer": "^9.4.4",
     "concurrently": "^4.1.0",
+    "html-minifier": "^4.0.0",
     "npm-watch": "^0.5.0",
     "postcss-cli": "^6.1.1",
     "postcss-css-variables": "^0.11.0",
@@ -26,7 +27,8 @@
     "webpack": "^4.28.3",
     "webpack-cli": "^3.2.0",
     "webpack-dev-server": "^3.1.14",
-    "websync": "^0.0.13"
+    "websync": "^0.0.13",
+    "yaml": "^1.10.0"
   },
   "dependencies": {},
   "watch": {

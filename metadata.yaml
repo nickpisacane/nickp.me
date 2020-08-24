@@ -1,0 +1,10 @@
+index.html:
+  title: Nick Pisacane - Software Engineer
+  description: I'm a Software Engineer at Facebook, where I work on Facebook Groups, and I’m the creator of happilyapp.io.
+  image: https://nickp.me/img/me.jpg
+  image_alt: Nick Pisacane - Software Engineer
+  image_width: 443
+  image_height: 443
+  twitter_site: '@nickpisacane'
+  twitter_card: summary
+  canonical: https://nickp.me/

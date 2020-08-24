@@ -98,6 +98,12 @@ p {
   text-align: center;
 }
 
+.info__inline-link {
+  color: var(--secondaryColor);
+  text-shadow: 1px 1px 2px var(--accentColor);
+  text-decoration: none;
+}
+
 .info__links {
   display: flex;
   flex-wrap: wrap;
