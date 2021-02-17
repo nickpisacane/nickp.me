@@ -5464,10 +5464,10 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-static-feather-replace@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/static-feather-replace/-/static-feather-replace-1.0.0.tgz#d9b8fed0abb8f56f6dd7e9a7cd889c5693548e6b"
-  integrity sha512-lN6K115IxluwTEExSMx0B7otY6F03mCVgSe/B1HgV7pCnPtiIg/NJuTv0d8Tt8FPqiJ7poga25EEZLhFAFqyuA==
+static-feather-replace@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/static-feather-replace/-/static-feather-replace-1.0.1.tgz#47c6e6fa388b1600cc056ede8db266cfd2c020bc"
+  integrity sha512-mk1YNKydssjLw8k1S/tC4i+xvqbvcNIOO8b2iG6vYIl2jo9W122BmJPwapRnsETPq0roVXsm5DUWNdjiXoYexA==
   dependencies:
     feather-icons "^4.17.0"
     fs-extra "^7.0.1"
