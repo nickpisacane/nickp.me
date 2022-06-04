@@ -1,16 +1,23 @@
 const path = require('path');
+const fs = require('fs');
+
+const ROOT = path.resolve(__dirname);
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
+  // entry: './src/index.ts',
+  entry: {
+    main: './src/index.ts',
+    channing: './src/channing/index.tsx',
+  },
   devtool: 'inline-source-map',
   output: {
     path: path.join(__dirname, 'public', 'js'),
-    filename: 'main.js',
+    filename: '[name].js',
     publicPath: '/js/',
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
     rules: [
@@ -29,5 +36,19 @@ module.exports = {
     ],
     port: 8000,
     watchContentBase: true,
+    before: (app, server, compiler) => {
+      app.get('/channing-birthday-invite-2022', function (req, res) {
+        fs.readFile(
+          path.join(ROOT, 'public', 'channing-birthday-invite-2022'),
+          (err, fileContents) => {
+            if (err) {
+              return res.status(500).end(err.message);
+            }
+            res.set('Content-Type', 'text/html');
+            res.status(200).send(fileContents);
+          },
+        );
+      });
+    },
   },
 };

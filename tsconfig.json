@@ -3,7 +3,14 @@
     "rootDir": "./src",
     "lib": ["esnext", "dom"],
     "target": "es5",
+    "jsx":"react",
     "module": "commonjs",
-    "sourceMap": true
-  }
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": [
+    "src/*",
+  ],
+  "exclude": ["node_modules"],
 }

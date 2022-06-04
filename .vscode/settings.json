@@ -3,5 +3,6 @@
     "**/node_modules": true,
     "public/css/main.css": true,
     "public/js/main.js": true
-  }
+  },
+  "cSpell.words": ["channing"]
 }
