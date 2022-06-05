@@ -13,16 +13,19 @@
     "watch:html": "npm-watch build:html",
     "dev-server": "webpack-dev-server --config ./webpack.config.dev.js",
     "foo": "npx tailwindcss -i ./src/channing/index.css -o ./public/css/channing.css --watch",
-    "start": "concurrently \"yarn dev-server\" \"yarn watch:css\" \"yarn watch:html\""
+    "start": "concurrently \"yarn dev-server\" \"yarn watch:css\" \"yarn watch:html\"",
+    "start:chan": "yarn dev-server"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
     "concurrently": "^4.1.0",
     "html-minifier": "^4.0.0",
+    "md5": "^2.3.0",
     "npm-watch": "^0.5.0",
     "postcss-cli": "^6.1.1",
     "postcss-css-variables": "^0.11.0",
     "static-feather-replace": "^1.0.1",
+    "terser-webpack-plugin": "^5.3.3",
     "ts-loader": "^5.3.3",
     "typescript": "^4.7.3",
     "webpack": "^4.28.3",
@@ -38,13 +41,16 @@
     "@mui/material": "^5.8.2",
     "eventemitter3": "^4.0.7",
     "firebase": "^9.8.2",
+    "js-confetti": "^0.10.2",
     "lodash": "^4.17.21",
     "postcss": "^8.4.14",
     "query-string": "^7.1.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-spring": "^9.4.5",
     "tailwindcss": "^3.0.24",
     "tailwindcss-classnames": "^3.0.5",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "uuid": "^8.3.2"
   },
   "watch": {

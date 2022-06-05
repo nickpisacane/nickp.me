@@ -8,6 +8,9 @@ import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {fire, fireSad} from './confetti';
+import {logEvent} from './firebase';
 
 export const InviteForm = () => {
   const [invitee, updateInvitee] = useInvitee();
@@ -20,8 +23,11 @@ export const InviteForm = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
       }}>
-      <Typography sx={{mb: 2}}>Can you attend?</Typography>
+      <Typography sx={{mb: 2}} textAlign="center">
+        Can you attend?
+      </Typography>
       <Box
         sx={{
           display: 'flex',
@@ -29,16 +35,30 @@ export const InviteForm = () => {
           alignItems: 'center',
         }}>
         <Button
-          variant={invitee.canAttend === true ? 'outlined' : 'contained'}
-          color="success"
+          variant="contained"
+          color="primary"
           sx={{mr: 2}}
-          onClick={() => updateInvitee({canAttend: true})}>
+          startIcon={
+            invitee.canAttend === true ? <CheckCircleIcon /> : undefined
+          }
+          onClick={() => {
+            fire();
+            updateInvitee({canAttend: true});
+            logEvent('InviteForm:InviteForm:can_attend_click');
+          }}>
           Yes
         </Button>
         <Button
-          variant={invitee.canAttend === false ? 'outlined' : 'contained'}
-          color="error"
-          onClick={() => updateInvitee({canAttend: false})}>
+          variant="contained"
+          color="secondary"
+          startIcon={
+            invitee.canAttend === false ? <CheckCircleIcon /> : undefined
+          }
+          onClick={() => {
+            fireSad();
+            updateInvitee({canAttend: false});
+            logEvent('InviteForm:InviteForm:cannot_attend_click');
+          }}>
           No
         </Button>
       </Box>
@@ -46,8 +66,9 @@ export const InviteForm = () => {
         <DetailForm invitee={invitee} updateInvitee={updateInvitee} />
       )}
       {invitee.canAttend === false && (
-        <Typography sx={{mt: 4}}>
-          Sorry you can't make it. See you next time!
+        <Typography sx={{mt: 4}} textAlign="center">
+          Sorry you can't make it. You can use this link at any time to update
+          your entry if your plans change. See you next time!
         </Typography>
       )}
     </Box>
@@ -58,6 +79,7 @@ const DetailForm: React.FC<{
   invitee: Invitee;
   updateInvitee: UpdateInvitee;
 }> = ({invitee, updateInvitee}) => {
+  const hasEmptyName = invitee.name.replace(/[^a-zA-Z]/, '') === '';
   return (
     <Box
       sx={{
@@ -65,18 +87,29 @@ const DetailForm: React.FC<{
         flexDirection: 'column',
         justifyContent: 'center',
         mt: 4,
+        width: '100%',
+        maxWidth: '400px',
       }}>
+      <Typography textAlign="center" variant="subtitle2">
+        See you then! You can use this link at any time to modify your entry.
+      </Typography>
       <TextField
+        sx={{mt: 2}}
         label="Name(s)"
         value={invitee.name}
         onChange={(e) => updateInvitee({name: e.currentTarget.value})}
+        error={hasEmptyName}
+        helperText={
+          hasEmptyName ? 'Please enter your first name(s)' : undefined
+        }
+        fullWidth
       />
       <TextField
         sx={{mt: 4}}
-        label="Side(s)"
-        helperText="[OPTIONAL] Please let us know what sides you can bring"
+        label="[Optional] Side(s)"
         value={invitee.willBring ?? ''}
         onChange={(e) => updateInvitee({willBring: e.currentTarget.value})}
+        fullWidth
       />
       <SideList />
     </Box>
@@ -85,13 +118,23 @@ const DetailForm: React.FC<{
 
 const SideList = () => {
   const sides = useSideList();
+
   return (
-    <List sx={{maxHeight: 300, overflowX: 'auto'}}>
-      {sides.map((side, i) => (
-        <ListItem key={`${side.id}`}>
-          <ListItemText primary={side.side} secondary={side.name} />
-        </ListItem>
-      ))}
-    </List>
+    <Box sx={{mt: 2}}>
+      {sides.length === 0 ? (
+        <Typography textAlign="center">
+          No one has signed up for any sides yet.
+        </Typography>
+      ) : (
+        <Typography textAlign="center">Who is bringing what?</Typography>
+      )}
+      <List sx={{maxHeight: 300, overflow: 'auto'}}>
+        {sides.map((side, i) => (
+          <ListItem key={`${side.id}`}>
+            <ListItemText primary={side.side} secondary={side.name} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 };

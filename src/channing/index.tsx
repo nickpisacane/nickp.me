@@ -6,16 +6,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {InviteInfo} from './InviteInfo';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import {fetchInvitee} from './firebase';
+import {fetchInvitee, logEvent} from './firebase';
+import {ThemeProvider} from '@mui/material/styles';
+import {theme} from './theme';
+import {fire} from './confetti';
 
 const LoadingOverlay = () => {
   return (
     <Box
-      style={{
+      sx={{
         position: 'fixed',
         width: '100vw',
         height: '100vh',
-        background: 'rgba(0, 0, 0, 0.25)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -28,21 +30,34 @@ const LoadingOverlay = () => {
 const App = () => {
   const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
+    logEvent('index:App:onMount:load');
     setLoading(true);
-    fetchInvitee().finally(() => {
-      setLoading(false);
-    });
+    fetchInvitee()
+      .catch((err) => {
+        logEvent('index:App:onMount:fetch_invitee_failed', {
+          errorMessage: err.message,
+          errorStack: err.stack,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setTimeout(fire, 500);
+      });
   }, []);
+
+  if (loading) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <>
-      {loading && <LoadingOverlay />}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           flexDirection: 'column',
+          p: 4,
         }}>
         <Channing />
         <InviteInfo />
@@ -54,10 +69,10 @@ const App = () => {
 
 const Wrapper = () => {
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <App />
-    </>
+    </ThemeProvider>
   );
 };
 

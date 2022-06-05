@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const webpack = require('webpack');
 
 const ROOT = path.resolve(__dirname);
 
@@ -36,6 +37,7 @@ module.exports = {
     ],
     port: 8000,
     watchContentBase: true,
+    host: '0.0.0.0',
     before: (app, server, compiler) => {
       app.get('/channing-birthday-invite-2022', function (req, res) {
         fs.readFile(

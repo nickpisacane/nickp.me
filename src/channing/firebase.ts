@@ -7,10 +7,10 @@ import {
   getDoc,
   query,
   where,
-  getDocs,
   onSnapshot,
   collection,
 } from 'firebase/firestore';
+import {getAnalytics, logEvent as logEventImpl} from 'firebase/analytics';
 import * as uuid from 'uuid';
 import * as EventEmitter from 'eventemitter3';
 import * as debounce from 'lodash/debounce';
@@ -27,10 +27,44 @@ const firebaseConfig = {
   measurementId: 'G-4W1SR61T92',
 };
 
+const isDev = () =>
+  window.location.hostname === 'localhost' ||
+  window.location.hostname.startsWith('192.');
+
+const getInviteeCollectionName = () => {
+  return isDev() ? 'invitees_dev' : 'invitees';
+};
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const analytics = getAnalytics(app);
 const emitter = new EventEmitter();
+
+export const logEvent = (
+  event: string,
+  eventData: Record<string, string> = {},
+) => {
+  const inviteeEventData: Record<string, string> = {};
+  try {
+    const current = getInvitee();
+    Object.assign(inviteeEventData, {
+      __invitee_id: current.id,
+      __invitee_name: current.name,
+      __invitee_can_attend: current.canAttend ?? 'NULL',
+      __invitee_will_bring: current.willBring ?? 'NULL',
+    });
+  } catch {
+    // NOOP
+  }
+  const actualEventData = {...eventData, ...inviteeEventData};
+  if (isDev()) {
+    console.info('[LOG EVENT]:', event, actualEventData);
+    return;
+  }
+
+  logEventImpl(analytics, event, actualEventData);
+};
 
 export type Invitee = {
   id: string;
@@ -46,15 +80,26 @@ const createInviteeFromURI = (): Invitee => {
     try {
       const data = JSON.parse(atob(query.init));
       if (typeof data.id === 'string' && typeof data.name === 'string') {
+        logEvent('firebase:createInviteeFromURI:parse_success');
         return {
           id: data.id,
           name: data.name,
         };
       }
-    } catch {
-      // NOOP
+    } catch (err) {
+      logEvent('firebase:createInviteeFromURI:parse_failed', {
+        errorMessage: err.message,
+        errorStack: err.stack,
+      });
     }
   }
+  if (isDev()) {
+    return {
+      id: 'test',
+      name: 'Dev User',
+    };
+  }
+  logEvent('firebase:createInviteeFromURI:create_empty_invitee');
   return {
     id: uuid.v4(),
     name: '',
@@ -64,7 +109,9 @@ const createInviteeFromURI = (): Invitee => {
 const invitee = createInviteeFromURI();
 
 export const fetchInvitee = async () => {
-  const inviteeSnap = await getDoc(doc(db, 'invitees', invitee.id));
+  const inviteeSnap = await getDoc(
+    doc(db, getInviteeCollectionName(), invitee.id),
+  );
   if (!inviteeSnap.exists()) {
     return;
   }
@@ -86,14 +133,23 @@ export const saveInvitee = async (): Promise<void> => {
   const prevLastSave = invitee.lastSave;
   invitee.lastSave = Timestamp.fromDate(new Date());
   try {
-    await setDoc(doc(db, 'invitees', invitee.id), invitee);
+    await setDoc(doc(db, getInviteeCollectionName(), invitee.id), invitee);
     emitter.emit('change', invitee);
+
+    emitter.emit('message', {
+      type: 'info',
+      message: 'Your changes have been saved',
+    } as Message);
   } catch (err) {
     invitee.lastSave = prevLastSave;
-    emitter.emit(
-      'error',
-      'Failed to save your RSVP. Please contact Nick at 858-342-4071',
-    );
+    logEvent('firebase:saveInvitee:save_failed', {
+      errorMessage: err.message,
+      errorStack: err.stack,
+    });
+    emitter.emit('message', {
+      type: 'error',
+      message: 'Failed to save your RSVP. Please contact Nick at 858-342-4071',
+    } as Message);
   }
 };
 
@@ -121,20 +177,31 @@ export const onChange = (fn: (invitee: Invitee) => void): Subscription => {
   };
 };
 
-export const onError = (fn: (message: string) => void): Subscription => {
-  const handler = (message: string) => {
-    fn(message);
+export type Message = {
+  type: 'info' | 'error';
+  message: string;
+};
+
+export const useMessage = (): [Message | null, () => void] => {
+  const [message, setMessage] = React.useState<Message | null>(null);
+
+  const clear = () => {
+    setMessage(null);
   };
 
-  emitter.on('error', handler);
+  React.useEffect(() => {
+    const handler = (message: Message) => {
+      setMessage(message);
+    };
 
-  const release = () => {
-    emitter.removeListener('error', handler);
-  };
+    emitter.on('message', handler);
 
-  return {
-    release,
-  };
+    return () => {
+      emitter.removeListener('message', handler);
+    };
+  }, []);
+
+  return [message, clear];
 };
 
 export type Side = {
@@ -147,7 +214,10 @@ export const useSideList = (): Side[] => {
   const [sides, setSides] = React.useState<Side[]>([]);
 
   React.useEffect(() => {
-    const q = query(collection(db, 'invitees'), where('canAttend', '==', true));
+    const q = query(
+      collection(db, getInviteeCollectionName()),
+      where('canAttend', '==', true),
+    );
     const unsubscribe = onSnapshot(q, (snap) => {
       snap.forEach((doc) => {
         const data = doc.data() as Invitee;
